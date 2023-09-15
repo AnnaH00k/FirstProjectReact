@@ -32,7 +32,7 @@ function App(): JSX.Element {
         <Stack.Screen
          name='Home' 
          component={Home} 
-         options={{title: "Sandsational Timer"
+         options={{title: "Sandy Seconds"
          }}
          />
          <Stack.Screen
