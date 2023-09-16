@@ -71,6 +71,11 @@ const Home = ({ navigation }: HomeProps) => {
         color="#000000"
         onPress={() => navigation.push('Details', { productId: '86' })}
       />
+      <Button
+        title="Go to Tasks"
+        color="#000000"
+        onPress={() => navigation.push('Tasks')}
+      />
     </View>
   );
 };

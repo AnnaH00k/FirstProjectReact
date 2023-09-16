@@ -17,10 +17,13 @@ import {
  //Screens
  import Home from './screens/Home';
  import Details from './screens/Details';
+ import Tasks from './screens/Tasks';
+
 
 export type RootStackParamList = {
   Home: undefined;
   Details: {productId: string};
+  Tasks: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -39,6 +42,12 @@ function App(): JSX.Element {
          name='Details'
          component={Details}
          options={{title: "Product Details"
+         }}
+         />
+          <Stack.Screen
+         name='Tasks'
+         component={Tasks}
+         options={{title: "Tasks"
          }}
          />
          </Stack.Navigator>
