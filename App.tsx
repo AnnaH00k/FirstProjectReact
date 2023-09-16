@@ -15,9 +15,9 @@ import {
 
 
  //Screens
- import Home from './screens/Home';
- import Details from './screens/Details';
- import Tasks from './screens/Tasks';
+ import Home from './src/screens/Home';
+ import Details from './src/screens/Details';
+ import Tasks from './src/screens/Tasks';
 
 
 export type RootStackParamList = {
