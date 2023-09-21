@@ -16,12 +16,22 @@ import {
 
  //Screens
  import Home from './src/screens/Home';
+ import Challanges from './src/screens/Challanges';
+ import GreenScreen from './src/screens/GreenScreen';
+ import Promodoro from './src/screens/Promodoro';
+ import TaskList from './src/screens/TaskList';
+ import Statistics from './src/screens/Statistics';
  import Details from './src/screens/Details';
  import Tasks from './src/screens/Tasks';
 
 
 export type RootStackParamList = {
   Home: undefined;
+  Challanges: undefined;
+  GreenScreen: undefined;
+  Promodoro: undefined;
+  TaskList: undefined;
+  Statistics: undefined;
   Details: {productId: string};
   Tasks: undefined;
 };
@@ -38,6 +48,36 @@ function App(): JSX.Element {
          options={{title: "Sandy Seconds"
          }}
          />
+         <Stack.Screen
+         name='Challanges'
+         component={Challanges}
+         options={{title: "Challanges"
+         }}
+         />
+         <Stack.Screen
+         name='GreenScreen'
+          component={GreenScreen}
+          options={{title: "Green Screen"
+          }}
+          />
+           <Stack.Screen
+         name='Promodoro'
+          component={Promodoro}
+          options={{title: "Promodoro"
+          }}
+          />
+           <Stack.Screen
+         name='Statistics'
+          component={Statistics}
+          options={{title: "Statistics"
+          }}
+          />
+            <Stack.Screen
+         name='TaskList'
+          component={TaskList}
+          options={{title: "TaskList"
+          }}
+          />
          <Stack.Screen
          name='Details'
          component={Details}
