@@ -16,6 +16,8 @@ import {
 
  //Screens
  import Home from './src/screens/Home';
+ import FlipClock from './src/screens/FlipClock';
+ import Settings from './src/screens/Settings';
  import Challanges from './src/screens/Challanges';
  import GreenScreen from './src/screens/GreenScreen';
  import Promodoro from './src/screens/Promodoro';
@@ -23,11 +25,14 @@ import {
  import Statistics from './src/screens/Statistics';
  import Details from './src/screens/Details';
  import Tasks from './src/screens/Tasks';
+import FlipClockHeader from './src/screens/FlipClockHeader';
 
 
 export type RootStackParamList = {
   Home: undefined;
   Challanges: undefined;
+  FlipClock: undefined;
+  Settings: undefined;
   GreenScreen: undefined;
   Promodoro: undefined;
   TaskList: undefined;
@@ -46,6 +51,22 @@ function App(): JSX.Element {
          name='Home' 
          component={Home} 
          options={{title: "Sandy Seconds"
+         }}
+         />
+          <Stack.Screen
+         name='FlipClock'
+         component={FlipClock}
+         options={{
+          title: "FlipClock",
+          headerStyle: { backgroundColor: 'black' },
+          headerTintColor: 'white',
+          header: () => <FlipClockHeader navigation={navigator} />,
+        }}
+         />
+          <Stack.Screen
+         name='Settings'
+         component={Settings}
+         options={{title: "Settings"
          }}
          />
          <Stack.Screen

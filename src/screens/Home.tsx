@@ -162,6 +162,7 @@ const Home = ({ navigation }: HomeProps) => {
             { transform: [{ translateX: menuTranslateX }] },
           ]}
         >
+          <Button title="Flip clock" color='white' onPress={() => navigation.push('FlipClock')} />
           <Button title="Challenges" color='white' onPress={() => navigation.push('Challanges')} />
           <Button title="Task List" color='white' onPress={() => navigation.push('TaskList')} />
           <Button title="Promodoro" color='white' onPress={() => navigation.push('Promodoro')} />
