@@ -32,17 +32,21 @@ const FlipClock = ({ route }: FlipClockProps) => {
       <View style={styles.content}>
         {/* Box 1 */}
         <View style={styles.box}>
-          <Image source={require('./images/logo1.png')} style={styles.image} />
+          <Image source={require('./images/0.png')} style={styles.image} />
+          <Image source={require('./images/0.png')} style={styles.image} />
+          <Image source={require('./images/0.png')} style={styles.image} />
         </View>
 
         {/* Box 2 */}
-        <View style={styles.box}>
-          <Image source={require('./images/logo.png')} style={styles.image} />
+        <View style={styles.box1}>
+        <Image source={require('./images/0.png')} style={styles.image} />
+        <Image source={require('./images/0.png')} style={styles.image} />
         </View>
 
         {/* Box 3 */}
-        <View style={styles.box}>
-          <Image source={require('./images/logo.png')} style={styles.image} />
+        <View style={styles.box2}>
+        <Image source={require('./images/0.png')} style={styles.image} />
+        <Image source={require('./images/0.png')} style={styles.image} />
         </View>
       </View>
     </View>
@@ -72,12 +76,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   box: {
-    width: 200,
-    height: 200,
+    width: 300,
+    height: 150,
     marginBottom: 16,
-    backgroundColor: 'white', // Adjust as needed
+    backgroundColor: 'black', // Adjust as needed
     borderRadius: 10,
     overflow: 'hidden',
+    flexDirection: 'row',
+    objectFit: 'contain',
+  },
+  box1: {
+    width: 200,
+    height: 150,
+    marginBottom: 16,
+    backgroundColor: 'black', // Adjust as needed
+    borderRadius: 10,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    objectFit: 'contain',
+  },
+  box2: {
+    width: 150,
+    height: 150,
+    marginBottom: 16,
+    backgroundColor: 'black', // Adjust as needed
+    borderRadius: 10,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    objectFit: 'contain',
   },
   image: {
     flex: 1,
