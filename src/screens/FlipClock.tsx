@@ -15,7 +15,7 @@ type FlipClockProps = NativeStackScreenProps<RootStackParamList, 'FlipClock'>;
 const FlipClock = ({ route }: FlipClockProps) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const windowDimensions = useWindowDimensions();
-  const isBigScreen = windowDimensions.width > 600; // Adjust the threshold as needed
+  const isBigScreen = windowDimensions.width > 500; // Adjust the threshold as needed
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [manualInput, setManualInput] = useState('');
   const [isSettingsVisible, setIsSettingsVisible] = useState(false); // New state for settings visibility
@@ -115,15 +115,15 @@ const FlipClock = ({ route }: FlipClockProps) => {
         {/* Box 1 */}
         <View style={styles.column}>
           <View style={[styles.box, isBigScreen && {width:450, height:300}]}>
-          <View style={[styles.numberBox && {width:150, gap: 3, height:300}]}>
+          <View style={[styles.numberBox, isBigScreen && {width:150, gap: 3, height:300}]}>
             <Image source={numberImagesTop[Math.floor((elapsedSeconds / 360000) % 10)]} style={styles.image} />
             <Image source={numberImagesBottom[Math.floor((elapsedSeconds / 360000) % 10)]} style={styles.image} />
           </View>
-          <View style={[styles.numberBox && {width:150, gap: 3, height:300}]}>
+          <View style={[styles.numberBox, isBigScreen && {width:150, gap: 3, height:300}]}>
             <Image source={numberImagesTop[Math.floor((elapsedSeconds % 360000) / 36000)]} style={styles.image} />
             <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 360000) / 36000)]} style={styles.image} />
           </View>
-          <View style={[styles.numberBox && { width: 150, gap: 3, height: 300 }]}>
+          <View style={[styles.numberBox, isBigScreen && { width: 150, gap: 3, height: 300 }]}>
             <Image source={numberImagesTop[Math.floor((elapsedSeconds % 36000) / 3600) % 10]} style={styles.image} />
             <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 36000) / 3600) % 10]} style={styles.image} />
           </View>
@@ -134,11 +134,11 @@ const FlipClock = ({ route }: FlipClockProps) => {
         {/* Box 2 */}
         <View style={styles.column}>
         <View style={[styles.box1, isBigScreen && {width:300, height:300}]}>
-              <View style={[styles.numberBox && { width: 150, gap: 3, height: 300 }]}>
+              <View style={[styles.numberBox, isBigScreen && { width: 150, gap: 3, height: 300 }]}>
                 <Image source={numberImagesTop[Math.floor((elapsedSeconds % 3600) / 600) % 6]} style={styles.image} />
                 <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 3600) / 600) % 6]} style={styles.image} />
               </View>
-              <View style={[styles.numberBox && { width: 150, gap: 3, height: 300 }]}>
+              <View style={[styles.numberBox, isBigScreen && { width: 150, gap: 3, height: 300 }]}>
                 <Image source={numberImagesTop[Math.floor((elapsedSeconds % 3600) / 60) % 10]} style={styles.image} />
                 <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 3600) / 60) % 10]} style={styles.image} />
               </View>
@@ -149,11 +149,11 @@ const FlipClock = ({ route }: FlipClockProps) => {
         {/* Box 3 */}
         <View style={styles.column}>
           <View style={[styles.box2, isBigScreen && { width: 300, height: 300 }]}>
-          <View style={[styles.numberBox && { width: 150, gap: 3, height: 300 }]}>
+          <View style={[styles.numberBox2, isBigScreen && { width: 150, gap: 3, height: 300 }]}>
                 <Image source={numberImagesTop[Math.floor((elapsedSeconds % 3600) / 10) % 6]} style={styles.image} />
                 <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 3600) / 10) % 6]} style={styles.image} />
               </View>
-            <View style={[styles.numberBox2 && { width: 150, gap: 3, height: 300 }]}>
+            <View style={[styles.numberBox2, isBigScreen && { width: 150, gap: 3, height: 300 }]}>
               <Image source={numberImagesTop[elapsedSeconds % 10]} style={styles.image} />
               <Image source={numberImagesBottom[elapsedSeconds % 10]} style={styles.image} />
             </View>
