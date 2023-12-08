@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // Assuming you're using Expo for icons
 
 // navigation
@@ -15,6 +15,10 @@ const FlipClock = ({ route }: FlipClockProps) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const windowDimensions = useWindowDimensions();
   const isBigScreen = windowDimensions.width > 600; // Adjust the threshold as needed
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [manualInput, setManualInput] = useState('');
+
+
 
   const [isStarted, setIsStarted] = useState(false);
   const [numberImageIndexTop, setNumberImageIndexTop] = useState(0); // Index for the current image
@@ -50,9 +54,9 @@ const FlipClock = ({ route }: FlipClockProps) => {
    useEffect(() => {
     if (isStarted) {
       const interval = setInterval(() => {
+        setElapsedSeconds((prevSeconds) => prevSeconds + 1);
         setNumberImageIndexTop((prevIndex) => (prevIndex + 1) % numberImagesTop.length);
         setNumberImageIndexBottom((prevIndex) => (prevIndex + 1) % numberImagesBottom.length);
-
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -66,10 +70,16 @@ const FlipClock = ({ route }: FlipClockProps) => {
     setIsStarted(false);
     setNumberImageIndexTop(0);
     setNumberImageIndexBottom(0);
-    setTime(0);
+    setElapsedSeconds(0);
   };
   const handleSettings = () => {
     navigation.navigate('Settings');
+  };
+  const handleManualInputSubmit = () => {
+    const seconds = parseInt(manualInput, 10);
+    if (!isNaN(seconds)) {
+      setElapsedSeconds(seconds);
+    }
   };
 
   return (
@@ -98,18 +108,18 @@ const FlipClock = ({ route }: FlipClockProps) => {
         {/* Box 1 */}
         <View style={styles.column}>
           <View style={[styles.box, isBigScreen && {width:400, height:300}]}>
-            <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
-              <Image source={require('./images/0Top.png')} style={styles.image} />
-              <Image source={require('./images/0Bottom.png')} style={styles.image} />
-            </View>
-            <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
-              <Image source={require('./images/0Top.png')} style={styles.image} />
-              <Image source={require('./images/0Bottom.png')} style={styles.image} />
-            </View>
-            <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
-              <Image source={require('./images/0Top.png')} style={styles.image} />
-              <Image source={require('./images/0Bottom.png')} style={styles.image} />
-            </View>
+          <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
+            <Image source={numberImagesTop[Math.floor((elapsedSeconds / 360000) % 10)]} style={styles.image} />
+            <Image source={numberImagesBottom[Math.floor((elapsedSeconds / 360000) % 10)]} style={styles.image} />
+          </View>
+          <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
+            <Image source={numberImagesTop[Math.floor((elapsedSeconds % 360000) / 36000)]} style={styles.image} />
+            <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 360000) / 36000)]} style={styles.image} />
+          </View>
+          <View style={[styles.numberBox && { width: 133, gap: 3, height: 300 }]}>
+            <Image source={numberImagesTop[Math.floor((elapsedSeconds % 36000) / 3600) % 10]} style={styles.image} />
+            <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 36000) / 3600) % 10]} style={styles.image} />
+          </View>
           </View>
           <Text style={styles.text}>HOUR</Text>
         </View>
@@ -117,13 +127,13 @@ const FlipClock = ({ route }: FlipClockProps) => {
         {/* Box 2 */}
         <View style={styles.column}>
         <View style={[styles.box1, isBigScreen && {width:300, height:300}]}>
-        <View style={[styles.numberBox && {width:150, gap: 3, height:300}]}>
-                <Image source={require('./images/0Top.png')} style={styles.image} />
-                <Image source={require('./images/0Bottom.png')} style={styles.image} />
+              <View style={[styles.numberBox && { width: 150, gap: 3, height: 300 }]}>
+                <Image source={numberImagesTop[Math.floor((elapsedSeconds % 3600) / 600) % 6]} style={styles.image} />
+                <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 3600) / 600) % 6]} style={styles.image} />
               </View>
-              <View style={[styles.numberBox && {width:150, gap: 3, height:300}]}>
-                <Image source={require('./images/0Top.png')} style={styles.image} />
-                <Image source={require('./images/0Bottom.png')} style={styles.image} />
+              <View style={[styles.numberBox && { width: 150, gap: 3, height: 300 }]}>
+                <Image source={numberImagesTop[Math.floor((elapsedSeconds % 3600) / 60) % 10]} style={styles.image} />
+                <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 3600) / 60) % 10]} style={styles.image} />
               </View>
           </View>
           <Text style={styles.text}>MIN</Text>
@@ -132,18 +142,29 @@ const FlipClock = ({ route }: FlipClockProps) => {
         {/* Box 3 */}
         <View style={styles.column}>
           <View style={[styles.box2, isBigScreen && { width: 300, height: 300 }]}>
-          <View style={[styles.numberBox2 && {width:150, gap: 3, height:300}]}>
-              <Image source={require('./images/0Top.png')} style={styles.image} />
-              <Image source={require('./images/0Bottom.png')} style={styles.image} />
-            </View>
-            <View style={[styles.numberBox2 && {width:150, gap: 3, height:300}]}>
-            <Image source={numberImagesTop[numberImageIndexTop]} style={styles.image} />
-            <Image source={numberImagesBottom[numberImageIndexBottom]} style={styles.image} />
+          <View style={[styles.numberBox && { width: 150, gap: 3, height: 300 }]}>
+                <Image source={numberImagesTop[Math.floor((elapsedSeconds % 3600) / 10) % 6]} style={styles.image} />
+                <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 3600) / 10) % 6]} style={styles.image} />
+              </View>
+            <View style={[styles.numberBox2 && { width: 150, gap: 3, height: 300 }]}>
+              <Image source={numberImagesTop[elapsedSeconds % 10]} style={styles.image} />
+              <Image source={numberImagesBottom[elapsedSeconds % 10]} style={styles.image} />
             </View>
           </View>
           <Text style={styles.text}>SEC</Text>
         </View>
-
+      </View>
+      <View style={styles.manualInputContainer}>
+        <TextInput
+          style={styles.manualInput}
+          placeholder="Set Elapsed Seconds"
+          keyboardType="numeric"
+          value={manualInput}
+          onChangeText={(text) => setManualInput(text)}
+        />
+        <TouchableOpacity  onPress={handleManualInputSubmit}>
+          <Text style={styles.button}>Set</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -173,6 +194,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
   },
+  manualInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 40,
+  },
+  manualInput: {
+    borderColor: 'white',
+    borderWidth: 1,
+    borderRadius: 10,
+    color: 'white',
+    padding: 8,
+    marginRight: 10,
+  },
+ 
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
