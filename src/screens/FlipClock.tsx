@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // Assuming you're using Expo for icons
 
 // navigation
@@ -13,6 +13,9 @@ type FlipClockProps = NativeStackScreenProps<RootStackParamList, 'FlipClock'>;
 
 const FlipClock = ({ route }: FlipClockProps) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const windowDimensions = useWindowDimensions();
+  const isBigScreen = windowDimensions.width > 600; // Adjust the threshold as needed
+
   const [isStarted, setIsStarted] = useState(false);
   const [numberImageIndexTop, setNumberImageIndexTop] = useState(0); // Index for the current image
   const [numberImageIndexBottom, setNumberImageIndexBottom] = useState(0); // Index for the current image
@@ -29,7 +32,6 @@ const FlipClock = ({ route }: FlipClockProps) => {
     require('./images/7Top.png'),
     require('./images/8Top.png'),
     require('./images/9Top.png'),
-    // Add more images as needed
   ];
   const numberImagesBottom = [
     require('./images/0Bottom.png'),
@@ -42,12 +44,9 @@ const FlipClock = ({ route }: FlipClockProps) => {
     require('./images/7Bottom.png'),
     require('./images/8Bottom.png'),
     require('./images/9Bottom.png'),
-    // Add more images as needed
 ];
 
-
-
-   // Function to change the image every half second
+   // Function to change the image every second
    useEffect(() => {
     if (isStarted) {
       const interval = setInterval(() => {
@@ -59,73 +58,55 @@ const FlipClock = ({ route }: FlipClockProps) => {
     }
   }, [isStarted, numberImagesTop, numberImagesBottom]);
 
-
-
-
- // Function to handle image click
- const handleImageClick = () => {
-  setIsStarted((prevIsStarted) => !prevIsStarted);
-};
-
-
-  const handleStart = () => {
-    setIsStarted(true);
-   };
-
-
-  const handleReset = () => {
+  // Function to handle start click
+  const handleStartClick = () => {
+    setIsStarted((prevIsStarted) => !prevIsStarted);
+  };
+  const handleStop = () => {
     setIsStarted(false);
     setNumberImageIndexTop(0);
     setNumberImageIndexBottom(0);
     setTime(0);
   };
-
-
   const handleSettings = () => {
     navigation.navigate('Settings');
   };
 
-
-
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
+
       <View style={styles.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialIcons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navButtons} onPress={handleImageClick}>
-        <Text style={styles.button}>{isStarted ? 'Pause' : 'Start'}</Text>
+        <TouchableOpacity style={styles.navButtons} onPress={handleStartClick}>
+          <Text style={styles.button}>{isStarted ? 'Pause' : 'Start'}</Text>
         </TouchableOpacity>
-        {isStarted &&
-          <TouchableOpacity onPress={handleReset}>
-            <Text style={[styles.button, { borderWidth: 1 }]}>Stop</Text> 
-          </TouchableOpacity>
-        }
-       
-
+          {isStarted &&
+            <TouchableOpacity onPress={handleStop}>
+              <Text style={[styles.button, { borderWidth: 1 }]}>Stop</Text> 
+            </TouchableOpacity>
+          }
         <TouchableOpacity onPress={handleSettings}> 
           <MaterialIcons name="settings" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
-      {/* Content */}
-      <View style={styles.content}>
+
+
+      <View style={[styles.content, isBigScreen && { flexDirection: 'row', gap: 15 }]}>
         {/* Box 1 */}
-
-
-        <View style={styles.firstFlipper}>
-          <View style={styles.box}>
-            <View style={styles.numberBox}>
+        <View style={styles.column}>
+          <View style={[styles.box, isBigScreen && {width:400, height:300}]}>
+            <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
               <Image source={require('./images/0Top.png')} style={styles.image} />
               <Image source={require('./images/0Bottom.png')} style={styles.image} />
             </View>
-            <View style={styles.numberBox}>
+            <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
               <Image source={require('./images/0Top.png')} style={styles.image} />
               <Image source={require('./images/0Bottom.png')} style={styles.image} />
             </View>
-            <View style={styles.numberBox}>
+            <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
               <Image source={require('./images/0Top.png')} style={styles.image} />
               <Image source={require('./images/0Bottom.png')} style={styles.image} />
             </View>
@@ -134,13 +115,13 @@ const FlipClock = ({ route }: FlipClockProps) => {
         </View>
 
         {/* Box 2 */}
-        <View style={styles.firstFlipper}>
-          <View style={styles.box1}>
-            <View style={styles.numberBox}>
+        <View style={styles.column}>
+        <View style={[styles.box1, isBigScreen && {width:300, height:300}]}>
+        <View style={[styles.numberBox && {width:150, gap: 3, height:300}]}>
                 <Image source={require('./images/0Top.png')} style={styles.image} />
                 <Image source={require('./images/0Bottom.png')} style={styles.image} />
               </View>
-              <View style={styles.numberBox}>
+              <View style={[styles.numberBox && {width:150, gap: 3, height:300}]}>
                 <Image source={require('./images/0Top.png')} style={styles.image} />
                 <Image source={require('./images/0Bottom.png')} style={styles.image} />
               </View>
@@ -149,13 +130,13 @@ const FlipClock = ({ route }: FlipClockProps) => {
         </View>
 
         {/* Box 3 */}
-        <View style={styles.firstFlipper}>
-          <View style={styles.box2}>
-            <View style={styles.numberBox2}>
+        <View style={styles.column}>
+          <View style={[styles.box2, isBigScreen && { width: 300, height: 300 }]}>
+          <View style={[styles.numberBox2 && {width:150, gap: 3, height:300}]}>
               <Image source={require('./images/0Top.png')} style={styles.image} />
               <Image source={require('./images/0Bottom.png')} style={styles.image} />
             </View>
-            <View style={styles.numberBox2}>
+            <View style={[styles.numberBox2 && {width:150, gap: 3, height:300}]}>
             <Image source={numberImagesTop[numberImageIndexTop]} style={styles.image} />
             <Image source={numberImagesBottom[numberImageIndexBottom]} style={styles.image} />
             </View>
@@ -207,47 +188,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  numberBox: {
-    width: 100,
-    backgroundColor: 'black', // Adjust as needed
-    overflow: 'hidden',
-    flexDirection: 'column',
-    gap: 1,
-    objectFit: 'contain',
-  },
-  numberBox2: {
-    width: 75,
-    backgroundColor: 'black', // Adjust as needed
-    overflow: 'hidden',
-    flexDirection: 'column',
-    gap: 1,
-    objectFit: 'contain',
-  },
+ 
   box: {
     width: 300,
     height: 150,
-    backgroundColor: 'black', // Adjust as needed
+    backgroundColor: 'black',
     borderRadius: 10,
     overflow: 'hidden',
     flexDirection: 'row',
     objectFit: 'contain',
   },
-  firstFlipper: {
-    flexDirection: 'column',
-  },
-  text:{
-    color: 'white',
-    fontSize: 15,
-   
-    padding: 3,
-    textAlign: 'center',
-    width: 100,
-    alignSelf: 'center',
-  },
   box1: {
     width: 200,
     height: 150,
-    backgroundColor: 'black', // Adjust as needed
+    backgroundColor: 'black', 
     borderRadius: 10,
     overflow: 'hidden',
     flexDirection: 'row',
@@ -256,12 +210,40 @@ const styles = StyleSheet.create({
   box2: {
     width: 150,
     height: 150,
-    backgroundColor: 'black', // Adjust as needed
+    backgroundColor: 'black', 
     borderRadius: 10,
     overflow: 'hidden',
     flexDirection: 'row',
     objectFit: 'contain',
   },
+  numberBox: {
+    width: 100,
+    backgroundColor: 'black',
+    overflow: 'hidden',
+    flexDirection: 'column',
+    gap: 1,
+    objectFit: 'contain',
+  },
+  numberBox2: {
+    width: 75,
+    backgroundColor: 'black',
+    overflow: 'hidden',
+    flexDirection: 'column',
+    gap: 1,
+    objectFit: 'contain',
+  },
+  column: {
+    flexDirection: 'column',
+  },
+  text:{
+    color: 'white',
+    fontSize: 15,
+    padding: 3,
+    textAlign: 'center',
+    width: 100,
+    alignSelf: 'center',
+  },
+  
   image: {
     flex: 1,
     width: '100%',
