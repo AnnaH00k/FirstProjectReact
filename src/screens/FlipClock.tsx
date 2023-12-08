@@ -8,6 +8,7 @@ import { RootStackParamList } from '../../App';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button } from 'react-native-elements';
+import FlipClockHeader from './FlipClockHeader';
 
 type FlipClockProps = NativeStackScreenProps<RootStackParamList, 'FlipClock'>;
 
@@ -17,6 +18,8 @@ const FlipClock = ({ route }: FlipClockProps) => {
   const isBigScreen = windowDimensions.width > 600; // Adjust the threshold as needed
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [manualInput, setManualInput] = useState('');
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false); // New state for settings visibility
+
 
 
 
@@ -73,7 +76,8 @@ const FlipClock = ({ route }: FlipClockProps) => {
     setElapsedSeconds(0);
   };
   const handleSettings = () => {
-    navigation.navigate('Settings');
+    // Toggle settings visibility
+    setIsSettingsVisible((prevIsVisible) => !prevIsVisible);
   };
   const handleManualInputSubmit = () => {
     const seconds = parseInt(manualInput, 10);
@@ -87,8 +91,9 @@ const FlipClock = ({ route }: FlipClockProps) => {
 
       <View style={styles.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="white" />
+          <MaterialIcons name="arrow-back" size={24} color="#797878" />
         </TouchableOpacity>
+        <View style={styles.startStop}>
         <TouchableOpacity style={styles.navButtons} onPress={handleStartClick}>
           <Text style={styles.button}>{isStarted ? 'Pause' : 'Start'}</Text>
         </TouchableOpacity>
@@ -97,8 +102,10 @@ const FlipClock = ({ route }: FlipClockProps) => {
               <Text style={[styles.button, { borderWidth: 1 }]}>Stop</Text> 
             </TouchableOpacity>
           }
+      </View>
+
         <TouchableOpacity onPress={handleSettings}> 
-          <MaterialIcons name="settings" size={24} color="white" />
+          <MaterialIcons name="settings" size={24} color="#797878" />
         </TouchableOpacity>
       </View>
 
@@ -107,16 +114,16 @@ const FlipClock = ({ route }: FlipClockProps) => {
       <View style={[styles.content, isBigScreen && { flexDirection: 'row', gap: 15 }]}>
         {/* Box 1 */}
         <View style={styles.column}>
-          <View style={[styles.box, isBigScreen && {width:400, height:300}]}>
-          <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
+          <View style={[styles.box, isBigScreen && {width:450, height:300}]}>
+          <View style={[styles.numberBox && {width:150, gap: 3, height:300}]}>
             <Image source={numberImagesTop[Math.floor((elapsedSeconds / 360000) % 10)]} style={styles.image} />
             <Image source={numberImagesBottom[Math.floor((elapsedSeconds / 360000) % 10)]} style={styles.image} />
           </View>
-          <View style={[styles.numberBox && {width:133, gap: 3, height:300}]}>
+          <View style={[styles.numberBox && {width:150, gap: 3, height:300}]}>
             <Image source={numberImagesTop[Math.floor((elapsedSeconds % 360000) / 36000)]} style={styles.image} />
             <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 360000) / 36000)]} style={styles.image} />
           </View>
-          <View style={[styles.numberBox && { width: 133, gap: 3, height: 300 }]}>
+          <View style={[styles.numberBox && { width: 150, gap: 3, height: 300 }]}>
             <Image source={numberImagesTop[Math.floor((elapsedSeconds % 36000) / 3600) % 10]} style={styles.image} />
             <Image source={numberImagesBottom[Math.floor((elapsedSeconds % 36000) / 3600) % 10]} style={styles.image} />
           </View>
@@ -154,6 +161,9 @@ const FlipClock = ({ route }: FlipClockProps) => {
           <Text style={styles.text}>SEC</Text>
         </View>
       </View>
+
+      {isSettingsVisible && ( // Render the settings input only if isSettingsVisible is true
+
       <View style={styles.manualInputContainer}>
         <TextInput
           style={styles.manualInput}
@@ -166,6 +176,7 @@ const FlipClock = ({ route }: FlipClockProps) => {
           <Text style={styles.button}>Set</Text>
         </TouchableOpacity>
       </View>
+      )}
     </View>
   );
 };
@@ -178,13 +189,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   button:{
-    color: 'white',
+    color: '#797878',
     fontSize: 20,
     padding: 3,
     textAlign: 'center',
     width: 100,
     alignSelf: 'center',
-    borderColor: 'white',
+    borderColor: '#797878',
     borderRadius: 10,
     borderWidth: 1,
 
@@ -201,10 +212,10 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   manualInput: {
-    borderColor: 'white',
+    borderColor: '#797878',
     borderWidth: 1,
     borderRadius: 10,
-    color: 'white',
+    color: '#797878',
     padding: 8,
     marginRight: 10,
   },
@@ -218,6 +229,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1,
+  },
+  startStop: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+   gap: 20,
   },
   content: {
     flex: 1,
