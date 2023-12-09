@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Button, Image, PanResponder, Animated, Easing, TouchableOpacity, Modal, Text, TextInput } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
+  Modal,
+  Button,
+  PanResponder,
+  Animated,
+  Easing,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Navigation
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -9,6 +22,7 @@ type HomeProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const Home = ({ navigation }: HomeProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
   const [imageIndex, setImageIndex] = useState(0); // Index for the current image
   const [changingImages, setChangingImages] = useState(false); // State to control image changing
   const [modalVisible, setModalVisible] = useState(false); // State for the modal
@@ -18,17 +32,58 @@ const Home = ({ navigation }: HomeProps) => {
   const [currentInterval, setCurrentInterval] = useState(''); // Current interval (study or pause)
   const [timeRemaining, setTimeRemaining] = useState(0); // Time remaining in seconds
 
-  const images = [
-    require('./images/logo1.png'),
-    require('./images/logo2.png'),
-    require('./images/logo3.png'),
-    require('./images/logo4.png'),
-    require('./images/logo5.png'),
-    require('./images/logo6.png'),
-    require('./images/logo7.png'),
-    require('./images/logo8.png'),
-    require('./images/logo9.png'), // Add more images as needed
-  ];
+  useEffect(() => {
+    // Load saved profile image when the component mounts
+    loadProfileImage();
+  }, []);
+
+// Ensure that permissions are granted before using the image picker
+const getPermission = async () => {
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== 'granted') {
+    alert('Permission to access media library is required!');
+  }
+};
+
+
+  const loadProfileImage = async () => {
+    try {
+      const savedImageUri = await AsyncStorage.getItem('profileImage');
+      if (savedImageUri) {
+        setProfileImage({ uri: savedImageUri });
+      }
+    } catch (error) {
+      console.error('Error loading profile image:', error);
+    }
+  };
+
+  const pickImage = () => {
+    ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images }).then((response) => {
+      if (response.assets && response.assets.length > 0) {
+        const selectedImage = response.assets[0];
+        setProfileImage(selectedImage);
+        saveProfileImage(selectedImage.uri);
+      }
+    });
+  };
+
+  const saveProfileImage = async (imageUri) => {
+    try {
+      await AsyncStorage.setItem('profileImage', imageUri);
+    } catch (error) {
+      console.error('Error saving profile image:', error);
+    }
+  };
+
+  const removeProfileImage = async () => {
+    try {
+      await AsyncStorage.removeItem('profileImage');
+      setProfileImage(null);
+    } catch (error) {
+      console.error('Error removing profile image:', error);
+    }
+  };
+
 
   const menuTranslateX = new Animated.Value(300);
   const menuTranslateY = new Animated.Value(-300);
@@ -77,8 +132,7 @@ const Home = ({ navigation }: HomeProps) => {
               <Text style={[styles.button, { borderWidth: 1 }]}>Statistics</Text> 
               </TouchableOpacity> */}
 
-        
-      
+       
       
       
       {/* Slider */}
@@ -89,8 +143,15 @@ const Home = ({ navigation }: HomeProps) => {
             { transform: [{ translateX: menuTranslateX }] },
           ]}
         >
-            <TouchableOpacity style={styles.profileImage} onPress={() => navigation.push('FlipClock')}>
-            </TouchableOpacity>
+               {/* Profile Image */}
+      <TouchableOpacity onPress={() => setModalVisible(true)}>
+        {profileImage ? (
+          <Image source={profileImage} style={styles.profileImage} />
+        ) : (
+          <Text style={styles.profileImageText}>Add Profile Picture</Text>
+        )}
+      </TouchableOpacity>
+      
             <Text style={{ color: 'white', fontSize: 20, marginBottom: 20 }}>Anna Hook</Text>
             <Text style={styles.underText}>Current Challenges:</Text>
             <View style={styles.sideScroll}>
@@ -108,7 +169,8 @@ const Home = ({ navigation }: HomeProps) => {
         </Animated.View>
       )}
 
-      {/* Modal for setting intervals */}
+
+      {/* Modal for image actions */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -116,9 +178,16 @@ const Home = ({ navigation }: HomeProps) => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-         
+          <View style={styles.modalContent}>
+            <Button title="Pick Image" onPress={pickImage} />
+            {profileImage && (
+              <Button title="Remove Image" onPress={removeProfileImage} />
+            )}
+            <Button title="Close" onPress={() => setModalVisible(false)} />
+          </View>
         </View>
       </Modal>
+
     </View>
   );
 };
@@ -172,6 +241,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 20,
   },
+  profileImageText: {
+    color: 'white',
+    fontSize: 16,
+    padding: 20,
+    width: 100,
+    height: 100,
+    borderRadius: 40,
+    borderColor: 'white',
+    borderWidth: 1,
+    textAlign: 'center',
+    display: 'flex',  // Use flex display
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+},
   underText: {
     color: 'grey',
     fontSize: 15,
