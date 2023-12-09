@@ -9,6 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button } from 'react-native-elements';
 import FlipClockHeader from './FlipClockHeader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 type FlipClockProps = NativeStackScreenProps<RootStackParamList, 'FlipClock'>;
 
@@ -53,6 +55,28 @@ const FlipClock = ({ route }: FlipClockProps) => {
     require('./images/FlipClockImages/9Bottom.png'),
 ];
 
+
+// Save seconds locally
+const saveSecondsLocally = async (seconds) => {
+  try {
+    await AsyncStorage.setItem('savedSeconds', String(seconds));
+  } catch (error) {
+    console.error('Error saving seconds:', error);
+  }
+};
+
+// Retrieve saved seconds
+const getSavedSeconds = async () => {
+  try {
+    const savedSeconds = await AsyncStorage.getItem('savedSeconds');
+    return savedSeconds ? parseInt(savedSeconds) : 0;
+  } catch (error) {
+    console.error('Error retrieving seconds:', error);
+    return 0;
+  }
+};
+
+
    // Function to change the image every second
    useEffect(() => {
     if (isStarted) {
@@ -60,6 +84,7 @@ const FlipClock = ({ route }: FlipClockProps) => {
         setElapsedSeconds((prevSeconds) => prevSeconds + 1);
         setNumberImageIndexTop((prevIndex) => (prevIndex + 1) % numberImagesTop.length);
         setNumberImageIndexBottom((prevIndex) => (prevIndex + 1) % numberImagesBottom.length);
+        saveSecondsLocally(elapsedSeconds);
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -79,12 +104,27 @@ const FlipClock = ({ route }: FlipClockProps) => {
     // Toggle settings visibility
     setIsSettingsVisible((prevIsVisible) => !prevIsVisible);
   };
-  const handleManualInputSubmit = () => {
-    const seconds = parseInt(manualInput, 10);
-    if (!isNaN(seconds)) {
-      setElapsedSeconds(seconds);
-    }
-  };
+
+
+// Function to handle manual input submit
+const handleManualInputSubmit = () => {
+  const seconds = parseInt(manualInput, 10);
+  if (!isNaN(seconds)) {
+    setElapsedSeconds(seconds);
+    saveSecondsLocally(seconds); // Save the input locally
+  }
+};
+
+   // Fetch saved seconds when the component mounts
+   useEffect(() => {
+    const fetchSavedSeconds = async () => {
+      const savedSeconds = await getSavedSeconds();
+      setElapsedSeconds(savedSeconds);
+    };
+
+    fetchSavedSeconds();
+  }, []); // Empty dependency array ensures that this effect runs only once, on mount
+
 
   return (
     <View style={styles.container}>
