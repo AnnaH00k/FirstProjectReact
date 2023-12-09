@@ -19,13 +19,10 @@ import {
  import FlipClock from './src/screens/FlipClock';
  import Settings from './src/screens/Settings';
  import Challanges from './src/screens/Challanges';
- import GreenScreen from './src/screens/GreenScreen';
- import Promodoro from './src/screens/Promodoro';
  import TaskList from './src/screens/TaskList';
  import Statistics from './src/screens/Statistics';
- import Details from './src/screens/Details';
- import Tasks from './src/screens/Tasks';
 import FlipClockHeader from './src/screens/FlipClockHeader';
+import HomeHeader from './src/screens/HomeHeader';
 
 
 export type RootStackParamList = {
@@ -33,12 +30,9 @@ export type RootStackParamList = {
   Challanges: undefined;
   FlipClock: undefined;
   Settings: undefined;
-  GreenScreen: undefined;
-  Promodoro: undefined;
   TaskList: undefined;
   Statistics: undefined;
-  Details: {productId: string};
-  Tasks: undefined;
+  
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -50,7 +44,10 @@ function App(): JSX.Element {
         <Stack.Screen
          name='Home' 
          component={Home} 
-         options={{title: "Sandy Seconds"
+         
+         options={{
+          title: "Challengor",
+          header: () => <HomeHeader navigation={navigator} />,
          }}
          />
           <Stack.Screen
@@ -58,8 +55,6 @@ function App(): JSX.Element {
          component={FlipClock}
          options={{
           title: "FlipClock",
-          headerStyle: { backgroundColor: 'black' },
-          headerTintColor: 'white',
           header: () => <FlipClockHeader navigation={navigator} />,
         }}
          />
@@ -75,18 +70,6 @@ function App(): JSX.Element {
          options={{title: "Challanges"
          }}
          />
-         <Stack.Screen
-         name='GreenScreen'
-          component={GreenScreen}
-          options={{title: "Green Screen"
-          }}
-          />
-           <Stack.Screen
-         name='Promodoro'
-          component={Promodoro}
-          options={{title: "Promodoro"
-          }}
-          />
            <Stack.Screen
          name='Statistics'
           component={Statistics}
@@ -99,18 +82,8 @@ function App(): JSX.Element {
           options={{title: "TaskList"
           }}
           />
-         <Stack.Screen
-         name='Details'
-         component={Details}
-         options={{title: "Product Details"
-         }}
-         />
-          <Stack.Screen
-         name='Tasks'
-         component={Tasks}
-         options={{title: "Tasks"
-         }}
-         />
+        
+        
          </Stack.Navigator>
          </NavigationContainer>
 

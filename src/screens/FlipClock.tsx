@@ -29,28 +29,28 @@ const FlipClock = ({ route }: FlipClockProps) => {
   const [isSeconds, setIsSeconds] = useState(0);
   const [time, setTime] = useState(0);
   const numberImagesTop = [
-    require('./images/0Top.png'),
-    require('./images/1Top.png'),
-    require('./images/2Top.png'),
-    require('./images/3Top.png'),
-    require('./images/4Top.png'),
-    require('./images/5Top.png'),
-    require('./images/6Top.png'),
-    require('./images/7Top.png'),
-    require('./images/8Top.png'),
-    require('./images/9Top.png'),
+    require('./images/FlipClockImages/0Top.png'),
+    require('./images/FlipClockImages/1Top.png'),
+    require('./images/FlipClockImages/2Top.png'),
+    require('./images/FlipClockImages/3Top.png'),
+    require('./images/FlipClockImages/4Top.png'),
+    require('./images/FlipClockImages/5Top.png'),
+    require('./images/FlipClockImages/6Top.png'),
+    require('./images/FlipClockImages/7Top.png'),
+    require('./images/FlipClockImages/8Top.png'),
+    require('./images/FlipClockImages/9Top.png'),
   ];
   const numberImagesBottom = [
-    require('./images/0Bottom.png'),
-    require('./images/1Bottom.png'),
-    require('./images/2Bottom.png'),
-    require('./images/3Bottom.png'),
-    require('./images/4Bottom.png'),
-    require('./images/5Bottom.png'),
-    require('./images/6Bottom.png'),
-    require('./images/7Bottom.png'),
-    require('./images/8Bottom.png'),
-    require('./images/9Bottom.png'),
+    require('./images/FlipClockImages/0Bottom.png'),
+    require('./images/FlipClockImages/1Bottom.png'),
+    require('./images/FlipClockImages/2Bottom.png'),
+    require('./images/FlipClockImages/3Bottom.png'),
+    require('./images/FlipClockImages/4Bottom.png'),
+    require('./images/FlipClockImages/5Bottom.png'),
+    require('./images/FlipClockImages/6Bottom.png'),
+    require('./images/FlipClockImages/7Bottom.png'),
+    require('./images/FlipClockImages/8Bottom.png'),
+    require('./images/FlipClockImages/9Bottom.png'),
 ];
 
    // Function to change the image every second
@@ -168,7 +168,8 @@ const FlipClock = ({ route }: FlipClockProps) => {
       <View style={styles.manualInputContainer}>
         <TextInput
           style={styles.manualInput}
-          placeholder="Set Elapsed Seconds"
+          placeholder="Set Seconds"
+          placeholderTextColor={'#797878'}
           keyboardType="numeric"
           value={manualInput}
           onChangeText={(text) => setManualInput(text)}
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
     color: '#797878',
     padding: 8,
     marginRight: 10,
-    fontSize: 30,
+    fontSize: 25,
 
   },
  

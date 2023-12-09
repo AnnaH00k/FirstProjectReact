@@ -32,80 +32,7 @@ const Home = ({ navigation }: HomeProps) => {
 
   const menuTranslateX = new Animated.Value(300);
   const menuTranslateY = new Animated.Value(-300);
-
-  // Function to change the image every half second
-  useEffect(() => {
-    if (changingImages) {
-      const interval = setInterval(() => {
-        setImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-      }, 500);
-      return () => clearInterval(interval);
-    }
-  }, [changingImages, images]);
-
-  // Function to handle image click
-  const handleImageClick = () => {
-    // Toggle image changing
-    setChangingImages((prevChangingImages) => !prevChangingImages);
-
-    // Start or pause the timer
-    if (!timerRunning) {
-      // Check if we are in the study interval or pause interval and set the time accordingly
-      const intervalInSeconds = currentInterval === 'Study' ? parseInterval(studyInterval) : parseInterval(pauseInterval);
-
-      setTimeRemaining(intervalInSeconds);
-      setTimerRunning(true);
-
-      const timer = setInterval(() => {
-        setTimeRemaining((prevTime) => {
-          if (prevTime <= 1) {
-            // Timer finished, switch to the other interval
-            setTimerRunning(false);
-            setCurrentInterval((prevInterval) => (prevInterval === 'Study' ? 'Pause' : 'Study'));
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
-
-      // Cleanup the timer when unmounting or pausing
-      return () => clearInterval(timer);
-    } else {
-      // Pause the timer
-      setTimerRunning(false);
-    }
-  };
-
-  // Function to handle the Save button in the modal
-  const handleSave = () => {
-    // Validate and save study and pause intervals locally
-    if (isValidInterval(studyInterval) && isValidInterval(pauseInterval)) {
-      // You can save these values to local storage or state as needed
-      // For example, you can use AsyncStorage for local storage in React Native
-      // AsyncStorage.setItem('studyInterval', studyInterval);
-      // AsyncStorage.setItem('pauseInterval', pauseInterval);
-
-      // Close the modal
-      setModalVisible(false);
-    } else {
-      // Display an error message or handle invalid input
-    }
-  };
-
-  // Function to validate the interval format (e.g., "mm:ss")
-  const isValidInterval = (interval: string) => {
-    // You can implement your validation logic here
-    // For example, you can use regular expressions to validate the format
-    // For simplicity, we'll check if it contains ":" here
-    return interval.includes(':');
-  };
-
-  // Function to parse the interval into seconds
-  const parseInterval = (interval: string) => {
-    const [minutes, seconds] = interval.split(':').map((str) => parseInt(str, 10));
-    return minutes * 60 + seconds;
-  };
-
+ 
     // PanResponder for swipe gesture
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -139,22 +66,25 @@ const Home = ({ navigation }: HomeProps) => {
 
   return (
     <View style={styles.container} {...panResponder.panHandlers}>
-      <View style={styles.imageContainer}>
-        <TouchableOpacity onPress={handleImageClick}>
-          <Image
-            source={images[imageIndex]}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-        <Button title="Set Intervals" onPress={() => setModalVisible(true)} />
-        {timerRunning && (
-          <View style={styles.timerContainer}>
-            <Text>{currentInterval} Time Remaining: {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}</Text>
-          </View>
-        )}
-      </View>
 
-      {/* Menu */}
+            <TouchableOpacity onPress={() => navigation.push('FlipClock')}>
+              <Text style={[styles.button, { borderWidth: 1 }]}>Flip clock</Text> 
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.push('Challanges')}>
+              <Text style={[styles.button, { borderWidth: 1 }]}>Challenges</Text> 
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.push('TaskList')}>
+              <Text style={[styles.button, { borderWidth: 1 }]}>Task List</Text> 
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.push('Statistics')}>
+              <Text style={[styles.button, { borderWidth: 1 }]}>Statistics</Text> 
+            </TouchableOpacity>
+
+        
+      
+      
+      
+      {/* Slider */}
       {menuOpen && (
         <Animated.View
           style={[
@@ -162,12 +92,8 @@ const Home = ({ navigation }: HomeProps) => {
             { transform: [{ translateX: menuTranslateX }] },
           ]}
         >
-          <Button title="Flip clock" color='white' onPress={() => navigation.push('FlipClock')} />
-          <Button title="Challenges" color='white' onPress={() => navigation.push('Challanges')} />
-          <Button title="Task List" color='white' onPress={() => navigation.push('TaskList')} />
-          <Button title="Promodoro" color='white' onPress={() => navigation.push('Promodoro')} />
-          <Button title="Green Screen Clock" color='white' onPress={() => navigation.push('GreenScreen')} />
-          <Button title="Statistics" color='white' onPress={() => navigation.push('Statistics')} />
+       
+            <Text style={{ color: 'white', fontSize: 20, marginBottom: 20 }}>Test</Text>
         </Animated.View>
       )}
 
@@ -179,22 +105,7 @@ const Home = ({ navigation }: HomeProps) => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text>Enter Study Interval (mm:ss):</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={(text) => setStudyInterval(text)}
-              value={studyInterval}
-            />
-            <Text>Enter Pause Interval (mm:ss):</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={(text) => setPauseInterval(text)}
-              value={pauseInterval}
-            />
-            <Button title="Save" onPress={handleSave} />
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-          </View>
+         
         </View>
       </Modal>
     </View>
@@ -204,10 +115,26 @@ const Home = ({ navigation }: HomeProps) => {
 export default Home;
 
 const styles = StyleSheet.create({
+  button: {
+    margin: 8,
+    padding: 4,
+    width: 150,
+    alignItems: 'center',
+    textAlign: 'center',
+    borderColor: 'white',
+    borderRadius: 10,
+    color: 'white',
+    fontSize: 17,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 20,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#091825',
   },
   imageContainer: {
     flex: 1,
@@ -221,11 +148,19 @@ const styles = StyleSheet.create({
   },
   menu: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#3E322A',
+    width: '95%',
+    height: '90%',
+    backgroundColor: '#091825',
+    borderColor: 'white',
+    borderWidth: 0.3,
+    borderRadius: 1000,
+    shadowColor: 'white',
+    shadowOffset: { width: 5, height: 5 },
+    shadowRadius: 7,
+    marginTop: 10,
+    marginBottom: 10,
+    shadowOpacity: 0.9,
+    elevation: 5,
     opacity: 1,
     alignItems: 'center',
     justifyContent: 'center',
