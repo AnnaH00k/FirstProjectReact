@@ -73,12 +73,9 @@ const Home = ({ navigation }: HomeProps) => {
             <TouchableOpacity onPress={() => navigation.push('Challanges')}>
               <Text style={[styles.button, { borderWidth: 1 }]}>Challenges</Text> 
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.push('TaskList')}>
-              <Text style={[styles.button, { borderWidth: 1 }]}>Task List</Text> 
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.push('Statistics')}>
+          {/*  <TouchableOpacity onPress={() => navigation.push('Statistics')}>
               <Text style={[styles.button, { borderWidth: 1 }]}>Statistics</Text> 
-            </TouchableOpacity>
+              </TouchableOpacity> */}
 
         
       
@@ -92,8 +89,22 @@ const Home = ({ navigation }: HomeProps) => {
             { transform: [{ translateX: menuTranslateX }] },
           ]}
         >
-       
-            <Text style={{ color: 'white', fontSize: 20, marginBottom: 20 }}>Test</Text>
+            <TouchableOpacity style={styles.profileImage} onPress={() => navigation.push('FlipClock')}>
+            </TouchableOpacity>
+            <Text style={{ color: 'white', fontSize: 20, marginBottom: 20 }}>Anna Hook</Text>
+            <Text style={styles.underText}>Current Challenges:</Text>
+            <View style={styles.sideScroll}>
+            <TouchableOpacity style={styles.challengeBox} onPress={() => navigation.push('FlipClock')}>
+            <Text style={styles.challengeBoxText}>Challenge Name</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.challengeBox} onPress={() => navigation.push('FlipClock')}>
+            <Text style={styles.challengeBoxText}>Challenge Name</Text>
+            </TouchableOpacity>
+            </View>
+
+            <Text style={styles.underText}>Completed Challenges:</Text>
+
+
         </Animated.View>
       )}
 
@@ -129,6 +140,45 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 20,
+  },
+  sideScroll: {
+    flexDirection: 'row',
+    width: '80%',
+    height: 100,
+    marginBottom: 20,
+    gap: 10,
+  },
+  challengeBox: {
+    width: 110,
+    height: 80,
+    borderRadius: 1000,
+    backgroundColor: '#364034',
+    },
+  challengeBoxText: {
+    color: 'white',
+    fontSize: 15,
+    textAlign: 'center',
+    alignSelf: 'center',
+    height: 80,
+    width: 110,
+    padding: 20,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 1000,
+    borderColor: 'white',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    marginBottom: 20,
+  },
+  underText: {
+    color: 'grey',
+    fontSize: 15,
+    textAlign: 'left',  
+    width: '80%',
+    marginBottom: 10,
+
   },
   container: {
     flex: 1,

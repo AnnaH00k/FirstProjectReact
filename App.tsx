@@ -23,6 +23,7 @@ import {
  import Statistics from './src/screens/Statistics';
 import FlipClockHeader from './src/screens/FlipClockHeader';
 import HomeHeader from './src/screens/HomeHeader';
+import ChallengesHeader from './src/screens/ChallengesHeader';
 
 
 export type RootStackParamList = {
@@ -67,7 +68,10 @@ function App(): JSX.Element {
          <Stack.Screen
          name='Challanges'
          component={Challanges}
-         options={{title: "Challanges"
+         options={{
+          title: "Challanges",
+          header: () => <ChallengesHeader navigation={navigator} />,
+
          }}
          />
            <Stack.Screen
