@@ -18,7 +18,9 @@ import {
  import Home from './src/screens/Home';
  import FlipClock from './src/screens/FlipClock';
  import Settings from './src/screens/Settings';
- import Challanges from './src/screens/Challanges';
+ import Challenges from './src/screens/Challenges';
+ import ChallengeItem from './src/screens/ChallengeItem';
+import ChallengeSetting from './src/screens/ChallengeSetting';
  import TaskList from './src/screens/TaskList';
  import Statistics from './src/screens/Statistics';
 import FlipClockHeader from './src/screens/FlipClockHeader';
@@ -28,7 +30,9 @@ import ChallengesHeader from './src/screens/ChallengesHeader';
 
 export type RootStackParamList = {
   Home: undefined;
-  Challanges: undefined;
+  Challenges: undefined;
+  ChallengeItem: { challengeObject: { name: string; description: string; time: string; tasks: any[]; type: string } };
+  ChallengeSetting: undefined;
   FlipClock: undefined;
   Settings: undefined;
   TaskList: undefined;
@@ -66,12 +70,27 @@ function App(): JSX.Element {
          }}
          />
          <Stack.Screen
-         name='Challanges'
-         component={Challanges}
+         name='Challenges'
+         component={Challenges}
          options={{
-          title: "Challanges",
+          title: "Challenges",
           header: () => <ChallengesHeader navigation={navigator} />,
-
+         }}
+         />
+          <Stack.Screen
+         name='ChallengeItem'
+         component={ChallengeItem}
+         options={{
+          title: "ChallengeItem",
+          header: () => <ChallengesHeader navigation={navigator} />,
+         }}
+         />
+          <Stack.Screen
+         name='ChallengeSetting'
+         component={ChallengeSetting}
+         options={{
+          title: "ChallengeSetting",
+          header: () => <ChallengesHeader navigation={navigator} />,
          }}
          />
            <Stack.Screen

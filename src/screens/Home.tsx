@@ -45,6 +45,12 @@ const getPermission = async () => {
   }
 };
 
+   // Placeholder data
+   const currentChallenges = [
+    { id: '1', name: 'Challenge 1', description: 'Description', time: 'Time', tasks: [], type: 'current' },
+    { id: '2', name: 'Challenge 2', description: 'Description', time: 'Time', tasks: [], type: 'current' },
+    // Add more challenges as needed
+  ];
 
   const loadProfileImage = async () => {
     try {
@@ -83,6 +89,29 @@ const getPermission = async () => {
       console.error('Error removing profile image:', error);
     }
   };
+  const renderChallenges = (challenges: {
+    description: string;
+    time: string;
+    tasks: any[]; id: string; name: string ; type: string;
+      }[]) => {
+  return challenges.map((challenge) => (
+    <TouchableOpacity
+      key={challenge.id}
+      style={styles.challengeBox}
+      onPress={() => navigation.push('ChallengeItem', {
+          challengeObject: {
+            name: challenge.name,
+            description: challenge.description, // Add description
+            time: challenge.time, // Add time
+            tasks: challenge.tasks, // Add tasks
+            type: challenge.type, // Add challenge type
+          },
+        })}
+    >
+      <Text style={styles.challengeBoxText}>{challenge.name}</Text>
+    </TouchableOpacity>
+  ));
+};
 
 
   const menuTranslateX = new Animated.Value(300);
@@ -125,7 +154,7 @@ const getPermission = async () => {
             <TouchableOpacity onPress={() => navigation.push('FlipClock')}>
               <Text style={[styles.button, { borderWidth: 1 }]}>Flip clock</Text> 
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.push('Challanges')}>
+            <TouchableOpacity onPress={() => navigation.push('Challenges')}>
               <Text style={[styles.button, { borderWidth: 1 }]}>Challenges</Text> 
             </TouchableOpacity>
           {/*  <TouchableOpacity onPress={() => navigation.push('Statistics')}>
@@ -153,15 +182,9 @@ const getPermission = async () => {
       </TouchableOpacity>
       
             <Text style={{ color: 'white', fontSize: 20, marginBottom: 20 }}>Anna Hook</Text>
+            
             <Text style={styles.underText}>Current Challenges:</Text>
-            <View style={styles.sideScroll}>
-            <TouchableOpacity style={styles.challengeBox} onPress={() => navigation.push('FlipClock')}>
-            <Text style={styles.challengeBoxText}>Challenge Name</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.challengeBox} onPress={() => navigation.push('FlipClock')}>
-            <Text style={styles.challengeBoxText}>Challenge Name</Text>
-            </TouchableOpacity>
-            </View>
+            <View style={styles.sideScroll}>{renderChallenges(currentChallenges)}</View>
 
             <Text style={styles.underText}>Completed Challenges:</Text>
 
