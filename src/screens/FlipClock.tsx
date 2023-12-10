@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // Assuming you're using Expo for icons
 
 // navigation
@@ -19,17 +19,13 @@ const FlipClock = ({ route }: FlipClockProps) => {
   const windowDimensions = useWindowDimensions();
   const isBigScreen = windowDimensions.width > 500; // Adjust the threshold as needed
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [manualInput, setManualInput] = useState('');
   const [isSettingsVisible, setIsSettingsVisible] = useState(false); // New state for settings visibility
-
-
-
-
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
   const [numberImageIndexTop, setNumberImageIndexTop] = useState(0); // Index for the current image
   const [numberImageIndexBottom, setNumberImageIndexBottom] = useState(0); // Index for the current image
-  const [isSeconds, setIsSeconds] = useState(0);
-  const [time, setTime] = useState(0);
   const numberImagesTop = [
     require('./images/FlipClockImages/0Top.png'),
     require('./images/FlipClockImages/1Top.png'),
@@ -57,9 +53,9 @@ const FlipClock = ({ route }: FlipClockProps) => {
 
 
 // Save seconds locally
-const saveSecondsLocally = async (seconds) => {
+const saveSecondsLocally = async (totalseconds) => {
   try {
-    await AsyncStorage.setItem('savedSeconds', String(seconds));
+    await AsyncStorage.setItem('totalSeconds', String(totalseconds));
   } catch (error) {
     console.error('Error saving seconds:', error);
   }
@@ -68,7 +64,7 @@ const saveSecondsLocally = async (seconds) => {
 // Retrieve saved seconds
 const getSavedSeconds = async () => {
   try {
-    const savedSeconds = await AsyncStorage.getItem('savedSeconds');
+    const savedSeconds = await AsyncStorage.getItem('totalSeconds');
     return savedSeconds ? parseInt(savedSeconds) : 0;
   } catch (error) {
     console.error('Error retrieving seconds:', error);
@@ -85,7 +81,7 @@ const getSavedSeconds = async () => {
         setNumberImageIndexTop((prevIndex) => (prevIndex + 1) % numberImagesTop.length);
         setNumberImageIndexBottom((prevIndex) => (prevIndex + 1) % numberImagesBottom.length);
         saveSecondsLocally(elapsedSeconds);
-      }, 1000);
+      }, 999);
       return () => clearInterval(interval);
     }
   }, [isStarted, numberImagesTop, numberImagesBottom]);
@@ -99,6 +95,8 @@ const getSavedSeconds = async () => {
     setNumberImageIndexTop(0);
     setNumberImageIndexBottom(0);
     setElapsedSeconds(0);
+    saveSecondsLocally(0);
+
   };
   const handleSettings = () => {
     // Toggle settings visibility
@@ -108,12 +106,31 @@ const getSavedSeconds = async () => {
 
 // Function to handle manual input submit
 const handleManualInputSubmit = () => {
-  const seconds = parseInt(manualInput, 10);
-  if (!isNaN(seconds)) {
-    setElapsedSeconds(seconds);
-    saveSecondsLocally(seconds); // Save the input locally
+  const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  if (!isNaN(totalSeconds)) {
+    setElapsedSeconds(totalSeconds);
+    saveSecondsLocally(totalSeconds); // Save the input locally
   }
 };
+const handleHoursChange = (text) => {
+  const hours = parseInt(text);
+  if (!isNaN(hours)) {
+    setHours(hours);
+  }
+}
+const handleMinutesChange = (text) => {
+  const minutes = parseInt(text);
+  if (!isNaN(minutes)) {
+    setMinutes(minutes);
+  }
+}
+const handleSecondsChange = (text) => {
+  const seconds = parseInt(text);
+  if (!isNaN(seconds)) {
+    setSeconds(seconds);
+  }
+}
+
 
    // Fetch saved seconds when the component mounts
    useEffect(() => {
@@ -127,6 +144,11 @@ const handleManualInputSubmit = () => {
 
 
   return (
+
+    <KeyboardAvoidingView
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={styles.container}
+  >
     <View style={styles.container}>
 
       <View style={styles.topBar}>
@@ -204,22 +226,39 @@ const handleManualInputSubmit = () => {
       </View>
 
       {isSettingsVisible && ( // Render the settings input only if isSettingsVisible is true
-
-      <View style={styles.manualInputContainer}>
-        <TextInput
-          style={styles.manualInput}
-          placeholder="Set Seconds"
-          placeholderTextColor={'#797878'}
-          keyboardType="numeric"
-          value={manualInput}
-          onChangeText={(text) => setManualInput(text)}
-        />
+        <View style={styles.manualInputContainer}>
+          <TextInput
+            style={styles.manualInput}
+            placeholder="HH"
+            placeholderTextColor={'#797878'}
+            keyboardType="numeric"
+            value={String(hours)}
+            onChangeText={handleHoursChange}
+          />
+          <TextInput
+            style={styles.manualInput}
+            placeholder="MM"
+            placeholderTextColor={'#797878'}
+            keyboardType="numeric"
+            value={String(minutes)}
+            onChangeText={handleMinutesChange}
+          />
+          <TextInput
+            style={styles.manualInput}
+            placeholder="SS"
+            placeholderTextColor={'#797878'}
+            keyboardType="numeric"
+            value={String(seconds)}
+            onChangeText={handleSecondsChange}
+          />
         <TouchableOpacity  onPress={handleManualInputSubmit}>
           <Text style={styles.button}>Set</Text>
         </TouchableOpacity>
       </View>
       )}
     </View>
+    </KeyboardAvoidingView>
+
   );
 };
 
