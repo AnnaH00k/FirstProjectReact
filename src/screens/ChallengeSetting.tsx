@@ -100,7 +100,7 @@ const ChallengeSetting = ({route}: ChallengeSettingProps) => {
             await AsyncStorage.setItem('challenges', JSON.stringify(parsedChallenges));
         
             console.log('Challenge saved locally');
-            navigation.navigate('ChallengeItem', { challengeObject, checkedTasks });
+            navigation.navigate('ChallengeItem', { challengeObject, checkedTasks: challengeObject.tasks.filter(task => task.completed) });
           } catch (error) {
             console.error('Error saving challenge:', error);
           }

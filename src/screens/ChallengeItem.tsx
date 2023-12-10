@@ -79,8 +79,12 @@ const ChallengeItem = ({ route }: ChallengeItemProps) => {
 
   const selectedChallengeType = challengeObject.type;
   const goToChallengeSetting = () => {
-    navigation.navigate('ChallengeSetting', { challengeObject });
+    navigation.navigate('ChallengeSetting', { challengeObject,checkedTasks: challengeObject.tasks.filter(task => task.completed) });
   };
+
+    const goToChallenges = () => {
+        navigation.navigate('Challenges', { challengeObject,checkedTasks: challengeObject.tasks.filter(task => task.completed) });
+    };
 
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -141,7 +145,6 @@ const ChallengeItem = ({ route }: ChallengeItemProps) => {
                 styles.taskBox,
                 { backgroundColor: taskStates[index] ? '#48C9B0' : '#0D2B3E' },
               ]}
-              onPress={() => toggleTaskState(index)}
             >
               <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'center', alignItems: 'center', alignContent: 'center', }}>
                 {taskStates[index] && (
@@ -153,7 +156,7 @@ const ChallengeItem = ({ route }: ChallengeItemProps) => {
           ))}
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.saveButton} onPress={() => navigation.push('Challenges')}>
+      <TouchableOpacity style={styles.saveButton} onPress={goToChallenges}>
         <Text style={styles.saveButtonText}>Go to Challenge overview</Text>
       </TouchableOpacity>
     </View>

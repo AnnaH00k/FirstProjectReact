@@ -30,12 +30,17 @@ import ChallengesHeader from './src/screens/ChallengesHeader';
 
 export type RootStackParamList = {
   Home: undefined;
-  Challenges: undefined;
+  Challenges: {
+    challengeObject: { name: string; description: string; time: string; tasks: any[]; type: string };
+    checkedTasks?: any[]; // Make checkedTasks optional
+  };
   ChallengeItem: {
     challengeObject: { name: string; description: string; time: string; tasks: any[]; type: string };
     checkedTasks?: any[]; // Make checkedTasks optional
   };
-  ChallengeSetting: { challengeObject: { name: string; description: string; time: string; tasks: any[]; type: string } };
+  ChallengeSetting: { challengeObject: { name: string; description: string; time: string; tasks: any[]; type: string };
+  checkedTasks?: any[]; // Make checkedTasks optional
+ };
   FlipClock: undefined;
   Settings: undefined;
   TaskList: undefined;
