@@ -151,13 +151,13 @@ const Challenges = ({route}: ChallengesProps) => {
         minWidth: 300,
         maxWidth: 400,
         width: 'auto', // Adjust the width to allow dynamic sizing
-        height: 200,
+        height: 'auto',
         gap: 10,
         padding: 15,
       },
       challengeBoxText: {
         color: 'white',
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
         textAlign: 'left',
       },
@@ -183,7 +183,6 @@ const Challenges = ({route}: ChallengesProps) => {
         fontSize: 20,
         textAlign: 'left',
         justifyContent: 'center',
-        paddingBottom: 10,
         color: '#48C9B0',
         width: 'auto',
       },
@@ -201,7 +200,7 @@ const Challenges = ({route}: ChallengesProps) => {
         textAlign: 'center',
         alignSelf: 'center',
         marginTop: 10,
-        height: 200,
+        height: '20%',
         marginLeft: 20,
       },
     });

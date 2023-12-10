@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   taskBox: {
     backgroundColor: '#0D2B3E',
-    padding: 16,
+    padding: 10,
     borderRadius: 20,
     marginBottom: 16,
     alignItems: 'center',
