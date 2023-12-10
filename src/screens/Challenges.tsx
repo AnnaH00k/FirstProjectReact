@@ -118,6 +118,7 @@ const Challenges = ({route}: ChallengesProps) => {
       sideScroll: {
         flexDirection: 'row',
         width: '90%',
+        alignSelf: 'center',
         marginLeft: 20,
         height: 100,
         marginBottom: 20,
@@ -126,7 +127,7 @@ const Challenges = ({route}: ChallengesProps) => {
       challengeBox: {
         flex: 1,
         borderRadius: 20,
-        backgroundColor: '#364034',
+        backgroundColor: '#0D2B3E',
         justifyContent: 'center',
         alignItems: 'center',
       },

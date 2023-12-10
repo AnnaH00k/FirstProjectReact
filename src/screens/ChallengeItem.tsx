@@ -87,6 +87,9 @@ const ChallengeItem = ({ route }: ChallengeItemProps) => {
           ))}
         </View>
       </ScrollView>
+      <TouchableOpacity style={styles.saveButton} onPress={() => navigation.push('Challenges')}>
+        <Text style={styles.saveButtonText}>Go to Challenge overview</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -197,4 +200,22 @@ buttonContainer: {
     justifyContent: 'space-around',
     marginTop: 20,
 },
+saveButton: {
+    backgroundColor: '#091825',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'white',
+    padding: 12,
+    marginTop: 16,
+    alignSelf: 'center',
+    width: '30%',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginBottom: 40,
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
