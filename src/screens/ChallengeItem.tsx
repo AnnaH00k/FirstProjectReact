@@ -2,7 +2,9 @@ import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDi
 import { MaterialIcons } from '@expo/vector-icons';
 import { Check } from 'phosphor-react-native';
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ChallengeObject } from './ChallengeObject'; // Import the ChallengeObject type
+
 
 
 //navigation
@@ -10,23 +12,80 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type ChallengeItemProps = NativeStackScreenProps<RootStackParamList, 'ChallengeItem'>;
 
 const ChallengeItem = ({ route }: ChallengeItemProps) => {
-  const { challengeObject } = route.params;
+  const { challengeObject, checkedTasks } = route.params;
   const [taskStates, setTaskStates] = useState(challengeObject.tasks.map(() => false));
+
+  useEffect(() => {
+    // Initialize taskStates based on checkedTasks
+    const initialStates = challengeObject.tasks.map((task, index) =>
+      checkedTasks.some((checkedTask) => checkedTask.description === task.description)
+    );
+    setTaskStates(initialStates);
+  }, [checkedTasks, challengeObject.tasks]);
+
+
   const toggleTaskState = (index: number) => {
-    setTaskStates(prevStates => {
+    setTaskStates((prevStates) => {
       const newStates = [...prevStates];
       newStates[index] = !newStates[index];
+
+
+      // Update the ChallengeObject with the new task states
+      const updatedTasks = challengeObject.tasks.map((task, i) => ({
+        ...task,
+        state: newStates[i],
+      }));
+
+      const updatedChallengeObject: ChallengeObject = {
+        id: challengeObject.name + challengeObject.description,
+        name: challengeObject.name,
+        description: challengeObject.description,
+        time: challengeObject.time,
+        type: challengeObject.type,
+        tasks: updatedTasks,
+      };
+
+
+      // Save the updated ChallengeObject locally (you need to implement AsyncStorage logic here)
+      saveChallengeObject(updatedChallengeObject);
+
       return newStates;
     });
   };
+
+  const saveChallengeObject = async (updatedChallengeObject: ChallengeObject) => {
+    try {
+      // Get the existing challenges from AsyncStorage
+      const savedChallenges = await AsyncStorage.getItem('challenges');
+      const parsedChallenges = savedChallenges ? JSON.parse(savedChallenges) : [];
+
+      // Find and update the specific challenge in the array
+      const updatedChallenges = parsedChallenges.map((ch) =>
+        ch.id === updatedChallengeObject.id ? updatedChallengeObject : ch
+      );
+
+      // Save the updated challenges array back to AsyncStorage
+      await AsyncStorage.setItem('challenges', JSON.stringify(updatedChallenges));
+    } catch (error) {
+      console.error('Error saving locally updated challenge:', error);
+    }
+  };
+  
+
   const selectedChallengeType = challengeObject.type;
+  const goToChallengeSetting = () => {
+    navigation.navigate('ChallengeSetting', { challengeObject });
+  };
 
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -34,7 +93,7 @@ const ChallengeItem = ({ route }: ChallengeItemProps) => {
           <MaterialIcons name="arrow-back" size={35} color="#797878" />
         </TouchableOpacity>
         <Text style={styles.textHeadline}>{challengeObject.name}</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={goToChallengeSetting}>
           <MaterialIcons name="settings" size={35} color="#797878" />
         </TouchableOpacity>
       </View>
@@ -50,40 +109,47 @@ const ChallengeItem = ({ route }: ChallengeItemProps) => {
 
 
         <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                    style={[styles.challengeTypeButton, selectedChallengeType === 'current' && styles.selectedButton]}
-                >
-                    <Text style={[styles.buttonText2, selectedChallengeType === 'current' && styles.buttonText]}>Current</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.challengeTypeButton, selectedChallengeType === 'saved' && styles.selectedButton]}
-                >
-                    <Text style={[styles.buttonText2, selectedChallengeType === 'saved' && styles.buttonText]}>Saved</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.challengeTypeButton, selectedChallengeType === 'completed' && styles.selectedButton]}
-                >
-                    <Text style={[styles.buttonText2, selectedChallengeType === 'completed' && styles.buttonText]}>Completed</Text>
-                </TouchableOpacity>
-            </View>
+  {selectedChallengeType === 'current' && (
+    <TouchableOpacity
+      style={[styles.challengeTypeButton, styles.selectedButton]}
+    >
+      <Text style={[styles.buttonText2, styles.buttonText]}>Current</Text>
+    </TouchableOpacity>
+  )}
+  {selectedChallengeType === 'saved' && (
+    <TouchableOpacity
+      style={[styles.challengeTypeButton, styles.selectedButton]}
+    >
+      <Text style={[styles.buttonText2, styles.buttonText]}>Saved</Text>
+    </TouchableOpacity>
+  )}
+  {selectedChallengeType === 'completed' && (
+    <TouchableOpacity
+      style={[styles.challengeTypeButton, styles.selectedButton]}
+    >
+      <Text style={[styles.buttonText2, styles.buttonText]}>Completed</Text>
+    </TouchableOpacity>
+  )}
+</View>
+
 
         <View style={styles.sideScroll}>
           {challengeObject.tasks.map((task, index) => (
-          <TouchableOpacity
-          key={index}
-          style={[
-            styles.taskBox,
-            { backgroundColor: taskStates[index] ? '#48C9B0' : '#0D2B3E' },
-          ]}
-          onPress={() => toggleTaskState(index)}
-        >
-            <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'center',alignItems:'center', alignContent:'center',  }}>
-          {taskStates[index] && (
-            <Check size={25} color="white" weight="fill" />
-          )}
-            <Text style={styles.challengeBoxText}>{task.description}</Text>
-            </View>
-        </TouchableOpacity>
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.taskBox,
+                { backgroundColor: taskStates[index] ? '#48C9B0' : '#0D2B3E' },
+              ]}
+              onPress={() => toggleTaskState(index)}
+            >
+              <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'center', alignItems: 'center', alignContent: 'center', }}>
+                {taskStates[index] && (
+                  <Check size={25} color="white" weight="fill" />
+                )}
+                <Text style={styles.challengeBoxText}>{task.description}</Text>
+              </View>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
@@ -156,7 +222,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 200,
+    minWidth: 100,
     width: 'auto', // Adjust the width based on your preference
   },
   challengeBoxText: {

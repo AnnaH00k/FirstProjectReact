@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { ChallengeObject } from './ChallengeObject'; // Import the ChallengeObject type
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 //navigation
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -16,7 +19,10 @@ import { useNavigation } from '@react-navigation/native'
 import {NativeStackNavigationProp} from '@react-navigation/native-stack'
 import { CheckBox } from 'react-native-elements';
 
-type ChallengeSettingProps = NativeStackScreenProps<RootStackParamList, 'ChallengeSetting'>
+type ChallengeSettingProps = NativeStackScreenProps<
+  RootStackParamList,
+  'ChallengeSetting'
+>;
 
 
 const ChallengeSetting = ({route}: ChallengeSettingProps) => {
@@ -26,7 +32,25 @@ const ChallengeSetting = ({route}: ChallengeSettingProps) => {
     const [taskList, setTaskList] = useState([]);
     const [currentTask, setCurrentTask] = useState('');
     const [selectedChallengeType, setSelectedChallengeType] = useState('current'); // Default to 'current'
+    const [checkedTasks, setCheckedTasks] = useState([]);
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+
+    useEffect(() => {
+        // Check if route.params contains challengeObject and set the state accordingly
+        if (route.params?.challengeObject) {
+          const { name, description, time, tasks, type } = route.params.challengeObject;
+          setChallengeName(name);
+          setChallengeDescription(description);
+          setChallengeTime(time);
+          setTaskList(tasks);
+          setSelectedChallengeType(type);
+
+           // Extract checked tasks
+            const completedTasks = tasks.filter(task => task.completed);
+            setCheckedTasks(completedTasks);
+        }
+      }, [route.params?.challengeObject]);
+
     const addTask = () => {
         if (currentTask.trim() !== '') {
           // Add task to the taskList array
@@ -34,20 +58,52 @@ const ChallengeSetting = ({route}: ChallengeSettingProps) => {
           setCurrentTask('');
         }
       };
+
+      const deleteTask = (index: number) => {
+        // Remove the task at the specified index
+        const updatedTaskList = [...taskList];
+        updatedTaskList.splice(index, 1);
+        setTaskList(updatedTaskList);
+      };
     
-      const saveChallenge = () => {
-        // Create a Challenge object and save it locally
-        const challengeObject = {
+    
+      const saveChallenge = async () => {
+        // Create a Challenge object
+        const challengeObject: ChallengeObject = {
+          id: challengeName + challengeDescription,
           name: challengeName,
           description: challengeDescription,
           time: challengeTime,
           tasks: taskList,
-          type: selectedChallengeType, // Add challenge type
-
+          type: selectedChallengeType,
         };
-            console.log(challengeObject);
-            // Navigate to ChallengeItem screen and pass the challengeObject as a route param
-            navigation.navigate('ChallengeItem', { challengeObject });
+
+  
+        try {
+            const existingChallenges = await AsyncStorage.getItem('challenges');
+            let parsedChallenges = existingChallenges ? JSON.parse(existingChallenges) : [];
+        
+            // Check if a challenge with the same ID already exists
+            const existingChallengeIndex = parsedChallenges.findIndex(
+              (challenge) => challenge.id === challengeObject.id
+            );
+        
+            if (existingChallengeIndex !== -1) {
+              // If the challenge exists, update its details
+              parsedChallenges[existingChallengeIndex] = challengeObject;
+            } else {
+              // If the challenge does not exist, add it to the array
+              parsedChallenges.push(challengeObject);
+            }
+        
+            // Save the updated challenges array to AsyncStorage
+            await AsyncStorage.setItem('challenges', JSON.stringify(parsedChallenges));
+        
+            console.log('Challenge saved locally');
+            navigation.navigate('ChallengeItem', { challengeObject, checkedTasks });
+          } catch (error) {
+            console.error('Error saving challenge:', error);
+          }
         };
 
     return (
@@ -107,6 +163,9 @@ const ChallengeSetting = ({route}: ChallengeSettingProps) => {
                 }}
             />
             <Text style={styles.taskDescription}>{task.description}</Text>
+            <TouchableOpacity onPress={() => deleteTask(index)}>
+              <MaterialIcons name="delete" size={30} color="#091825" />
+            </TouchableOpacity>
           </View>
         ))}
         </ScrollView>
@@ -172,6 +231,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
+    width: '80%',
   },
   taskListContainer: {
     flex: 1,
@@ -182,9 +242,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
     padding: 4,
+    paddingHorizontal: 16,
+    gap: 8,
     marginBottom: 8,
+    width: '80%',
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   addButton: {
     backgroundColor: '#4CAF50',
@@ -216,7 +281,7 @@ const styles = StyleSheet.create({
   },
    taskDescription: {
     marginLeft: 8,
-    fontSize: 16,
+    fontSize: 20,
     color: 'black',
   },
   buttonContainer: {

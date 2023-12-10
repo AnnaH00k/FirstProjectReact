@@ -1,8 +1,9 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-
-
+import { ChallengeObject } from './ChallengeObject'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import { Button } from 'react-native';
 //navigation
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../../App'
@@ -13,65 +14,78 @@ type ChallengesProps = NativeStackScreenProps<RootStackParamList, 'Challenges'>
 
 
 const Challenges = ({route}: ChallengesProps) => {
-
-
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+    // State to hold the locally saved challenges
+    const [localChallenges, setLocalChallenges] = useState<ChallengeObject[]>([]);
 
-    // Placeholder data
-  const currentChallenges = [
-    { id: '1', name: 'Challenge 1', description: 'Description', time: 'Time', tasks: [], type: 'current' },
-    { id: '2', name: 'Challenge 2', description: 'Description', time: 'Time', tasks: [], type: 'current' },
-    // Add more challenges as needed
-  ];
+    useEffect(() => {
+        const fetchLocalChallenges = async () => {
+          try {
+            const savedChallenges = await AsyncStorage.getItem('challenges');
+            const parsedChallenges = savedChallenges ? JSON.parse(savedChallenges) : [];
+            setLocalChallenges(parsedChallenges);
+          } catch (error) {
+            console.error('Error fetching locally saved challenges:', error);
+          }
+        };
+    
+        fetchLocalChallenges();
+      }, []); // Empty dependency array to run the effect only once
 
-  const savedChallenges = [
-    { id: '3', name: 'Challenge 3', description: 'Description', time: 'Time', tasks: [], type: 'saved' },
-    { id: '4', name: 'Challenge 4', description: 'Description', time: 'Time', tasks: [], type: 'saved' },
-    // Add more challenges as needed
-  ];
 
-  const completedChallenges = [
-    { id: '5', name: 'Challenge 5', description: 'Description', time: 'Time', tasks: [], type: 'completed' },
-    { id: '6', name: 'Challenge 6', description: 'Description', time: 'Time', tasks: [], type: 'completed' },
-    // Add more challenges as needed
-  ];
+      
 
-  const renderChallenges = (challenges: {
-      description: string;
-      time: string;
-      tasks: any[]; id: string; name: string ; type: string;
-        }[]) => {
-    return challenges.map((challenge) => (
-      <TouchableOpacity
-        key={challenge.id}
-        style={styles.challengeBox}
-        onPress={() => navigation.push('ChallengeItem', {
-            challengeObject: {
-              name: challenge.name,
-              description: challenge.description, // Add description
-              time: challenge.time, // Add time
-              tasks: challenge.tasks, // Add tasks
-            type: challenge.type, // Add challenge type
-            },
-          })}
-      >
-        <Text style={styles.challengeBoxText}>{challenge.name}</Text>
-      </TouchableOpacity>
-    ));
-  };
+      const renderChallenges = (challenges: ChallengeObject[]) => {
+        return challenges.map((challenge) => (
+          <TouchableOpacity
+            key={challenge.id}
+            style={styles.challengeBox}
+            onPress={() => navigation.push('ChallengeItem', { challengeObject: challenge, checkedTasks: challenge.tasks.filter(task => task.completed) })}
+          >
+            <Text style={styles.challengeBoxText}>{challenge.name}</Text>
+            <Text style={styles.challengeBoxDescription}>{challenge.description}</Text>
+            {challenge.tasks && challenge.tasks.length > 0 && (
+              <Text style={styles.challengeBoxTasks}>
+                Tasks: {challenge.tasks.length}
+              </Text>
+            )}
+             {challenge.time && (
+              <Text style={styles.challengeBoxTime}>{challenge.time}</Text>
+            )}
+          </TouchableOpacity>
+        ));
+      };
 
-  const renderChallengesSection = (challenges: any[], sectionTitle: string) => {
+
+      const deleteAllChallenges = async () => {
+        try {
+          // Remove challenges from AsyncStorage
+          await AsyncStorage.removeItem('challenges');
+          
+          // Clear the localChallenges state
+          setLocalChallenges([]);
+        } catch (error) {
+          console.error('Error deleting challenges:', error);
+        }
+      };
+
+      
+
+  const renderChallengesSection = (challenges: ChallengeObject[], sectionTitle: string) => {
+    const sortedChallenges = challenges.filter((challenge) => challenge.type === sectionTitle.toLowerCase());
+
     return (
       <View>
         <Text style={styles.underText}>{sectionTitle}</Text>
-        {challenges.length > 0 ? (
-          <View style={styles.sideScroll}>{renderChallenges(challenges)}</View>
+        {sortedChallenges.length > 0 ? (
+          <View style={styles.sideScroll}>{renderChallenges(sortedChallenges)}</View>
         ) : (
-          <Text style={styles.noChallengesText}>Add challenges</Text>
+          <Text style={styles.noChallengesText}>Add  {sectionTitle.toLowerCase()} challenges in the top right corner.</Text>
         )}
       </View>
     );
   };
+
 
   return (
     <View style={styles.container}>
@@ -85,11 +99,19 @@ const Challenges = ({route}: ChallengesProps) => {
         </TouchableOpacity>
       </View>
 
-      <View>
-        {renderChallengesSection(currentChallenges, 'Current Challenges')}
-        {renderChallengesSection(savedChallenges, 'Saved Challenges')}
-        {renderChallengesSection(completedChallenges, 'Completed Challenges')}
-      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row'}}>
+      {renderChallengesSection(localChallenges, 'Current')}
+      </ScrollView>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row' }}>
+      {renderChallengesSection(localChallenges, 'Saved')}
+      </ScrollView>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row'}}>
+      {renderChallengesSection(localChallenges, 'Completed')}
+      </ScrollView>
+
+      <Button title="Delete All Challenges" onPress={deleteAllChallenges} color="#FF0000" />
+
+
     </View>
   );
 };
@@ -117,32 +139,60 @@ const Challenges = ({route}: ChallengesProps) => {
       },
       sideScroll: {
         flexDirection: 'row',
-        width: '90%',
+        width: 'auto',
         alignSelf: 'center',
         marginLeft: 20,
-        height: 100,
         marginBottom: 20,
         gap: 10,
       },
       challengeBox: {
-        flex: 1,
         borderRadius: 20,
         backgroundColor: '#0D2B3E',
-        justifyContent: 'center',
-        alignItems: 'center',
+        minWidth: 300,
+        maxWidth: 400,
+        width: 'auto', // Adjust the width to allow dynamic sizing
+        height: 200,
+        gap: 10,
+        padding: 15,
       },
       challengeBoxText: {
         color: 'white',
-        fontSize: 15,
+        fontSize: 30,
+        fontWeight: 'bold',
+        textAlign: 'left',
+      },
+      challengeBoxDescription: {
+        fontSize: 20,
+        textAlign: 'left',
+        color: '#D0D6D6',
+        fontStyle: 'italic',
+      },
+      challengeBoxTime: {
+        fontSize: 18,
         textAlign: 'center',
-        padding: 20,
+        justifyContent: 'center',
+        color: '#D0D6D6',
+        borderWidth: 0.4,
+        borderRadius: 20,
+        borderColor: '#D0D6D6',
+        padding: 5,
+        width: 'auto',
+      },
+    
+      challengeBoxTasks: {
+        fontSize: 20,
+        textAlign: 'left',
+        justifyContent: 'center',
+        paddingBottom: 10,
+        color: '#48C9B0',
+        width: 'auto',
       },
       underText: {
         color: 'grey',
         fontSize: 15,
         textAlign: 'left',
-        alignSelf: 'center',
-        width: '90%',
+        marginLeft: 20,
+        width: '100%',
         marginBottom: 10,
       },
       noChallengesText: {
@@ -151,5 +201,7 @@ const Challenges = ({route}: ChallengesProps) => {
         textAlign: 'center',
         alignSelf: 'center',
         marginTop: 10,
+        height: 200,
+        marginLeft: 20,
       },
     });
